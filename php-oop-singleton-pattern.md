@@ -1,4 +1,15 @@
 # Understanding Object Instantiation Patterns in PHP
+The singleton pattern ensures that there's a single point of access to that instance, usually via a static method or property.
+
+Here's a brief overview of the singleton design pattern and how it might be applied to a WordPress plugin:
+
+   1.Singleton Design Pattern:
+        The singleton pattern is a creational design pattern that restricts the instantiation of a class to a single instance and provides a global point of access to that instance.
+        It often involves a private constructor, a static method to retrieve the instance, and a private static property to hold the single instance.
+
+   2.Singleton in WordPress Plugin:
+        In the context of a WordPress plugin, implementing a singleton pattern can be beneficial in scenarios where you want to ensure that only one instance of the plugin class is created.
+        This can be useful for managing global settings, resources, or ensuring that certain actions or filters are hooked into the system only once.
 
 ## Singleton Pattern Example
 
