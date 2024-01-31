@@ -30,22 +30,24 @@ $singleton_instance = MySingletonPlugin::get_instance();
 ```
 ## Let me break down the code for you:
 
-   ## private static $instance = null;:
-    This line declares a private static property named $instance within the class. It is used to store the single instance of the class.
-    It's static so that it belongs to the class itself rather than an instance of the class.
+1. private static $instance = null;:
+This line declares a private static property named $instance within the class. It is used to store the single instance of the class.
+It's static so that it belongs to the class itself rather than an instance of the class.
 
-   ## private function __construct() { /* Initialization code here */ }:
-    This is a private constructor method. It is called when you create a new instance of the class using new self() (as seen in the get_instance method).
-    The __construct method is often used for initializing properties or performing setup tasks when an object is created.
-    Making the constructor private ensures that the class cannot be instantiated from outside the class itself.
+2. private function __construct() { /* Initialization code here */ }:
+This is a private constructor method. It is called when you create a new instance of the class using new self() (as seen in the get_instance method).
+The __construct method is often used for initializing properties or performing setup tasks when an object is created.
+Making the constructor private ensures that the class cannot be instantiated from outside the class itself.
 
-   ## public static function get_instance() { /* ... */ }:
-    This is a public static method named get_instance. It's used to get the single instance of the class.
-    It checks if the $instance property is null. If it is, it creates a new instance of the class (new self()) and assigns it to $instance.
-    If the $instance is already set, it simply returns the existing instance.
-    This method is static, meaning you can call it without creating an instance of the class. It's a common convention for singleton patterns.
+3. public static function get_instance() { /* ... */ }:
+This is a public static method named get_instance. It's used to get the single instance of the class.
+It checks if the $instance property is null. If it is, it creates a new instance of the class (new self()) and assigns it to $instance.
+If the $instance is already set, it simply returns the existing instance.
+This method is static, meaning you can call it without creating an instance of the class. It's a common convention for singleton patterns.
 
-In this line, MySingletonPlugin::get_instance() is called to obtain the single instance of the MySingletonPlugin class. If an instance doesn't exist, it will be created using the private constructor. If an instance already exists, the existing instance is returned. This ensures that throughout your application, there is only one instance of the MySingletonPlugin class.
+In this line, MySingletonPlugin::get_instance() is called to obtain the single instance of the MySingletonPlugin class. 
+If an instance doesn't exist, it will be created using the private constructor. If an instance already exists, the existing instance is returned. 
+This ensures that throughout your application, there is only one instance of the MySingletonPlugin class.
 
 ## Consider the following PHP code implementing the Singleton Pattern:
 
