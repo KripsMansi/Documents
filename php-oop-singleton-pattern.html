@@ -1,5 +1,10 @@
-1. Singleton Pattern Example:
+# Understanding Object Instantiation Patterns in PHP
 
+## Singleton Pattern Example
+
+Consider the following PHP code implementing the Singleton Pattern:
+
+```php
 class Logger {
     private static $instance = null;
     private $logs = [];
@@ -34,6 +39,7 @@ $logs_2 = $logger_instance_2->getLogs();
 
 print_r($logs_1); // Output: Array ( [0] => Message from Instance 1, [1] => Message from Instance 2 )
 print_r($logs_2); // Output: Array ( [0] => Message from Instance 1, [1] => Message from Instance 2 )
+
 
 
 Explanation:
