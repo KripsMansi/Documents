@@ -3,8 +3,7 @@
 This repository contains documents that provide information, explanations, or code samples.
 
 ## Table of Contents
-
-- [php-oop-singleton-pattern.](#https://github.com/KripsMansi/documents/blob/main/php-oop-singleton-pattern.html)
+[Singleton Pattern Example](https://kripsmansi.github.io/documents/php-oop-singleton-pattern)
 
 ## Introduction
 
