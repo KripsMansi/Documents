@@ -1,5 +1,5 @@
 # Understanding Object Instantiation Patterns in PHP
-The singleton pattern ensures that there's a single point of access to that instance, usually via a static method or property.
+In the context of WordPress, a singleton plugin typically refers to a plugin design pattern where only one instance of the plugin class is created during the entire execution of the WordPress system. The singleton pattern ensures that there's a single point of access to that instance, usually via a static method or property.
 
 Here's a brief overview of the singleton design pattern and how it might be applied to a WordPress plugin:
 
