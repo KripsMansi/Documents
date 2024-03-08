@@ -100,9 +100,9 @@ $foreverPageAccessToken = $response['access_token'];
 
 // Initialize WooCommerce client
 $woocommerce = new Client(
-    'http://localhost/bedrockwp/demo1/',
-    'ck_9b2330acac7d6d50ba875b0ce22755a24fa246a8',
-    'cs_f8fa6b3de448da755c382711c6251bf1fe224113',
+    'YOUR-SITE-URL',
+    'CONSUMER-KEY',
+    'SECRET-KEY',
     [
         'wp_api' => true,
         'version' => 'wc/v3',
