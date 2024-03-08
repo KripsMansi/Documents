@@ -1,4 +1,4 @@
-# Integrating Facebook and WooCommerce
+# Integrating Facebook and WooCommerce : Publish Woocommerce Product in Facebook Page as post
 
 This guide outlines the step-by-step process of integrating Facebook and WooCommerce for seamless management of your online store and social media presence.
 
@@ -64,3 +64,99 @@ This guide outlines the step-by-step process of integrating Facebook and WooComm
    - This allows you to automate the process of updating your Facebook page with new products from your WooCommerce store.
 
 By following these steps, you can effectively integrate Facebook and WooCommerce to streamline your e-commerce operations and enhance your online presence.
+
+```php
+// Including required libraries
+use Facebook\Facebook;
+use Automattic\WooCommerce\Client;
+
+// Include Composer's autoloader
+require_once 'vendor/autoload.php';
+
+// Facebook App credentials
+$appId = 'YOUR_APP_ID';
+$appSecret = 'YOUR_APP_SECRET';
+
+// Facebook page ID
+$pageId = 'YOUR_PAGE_ID';
+
+// User Access Token for posting on Facebook
+$userAccessToken = 'YOUR_USER_ACCESS_TOKEN';
+
+// Initialize Facebook SDK
+$fb = new Facebook([
+    'app_id' => $appId,
+    'app_secret' => $appSecret,
+    'default_graph_version' => 'v2.5'
+]);
+
+// Get long-lived access token from user access token
+$longLivedToken = $fb->getOAuth2Client()->getLongLivedAccessToken($userAccessToken);
+$fb->setDefaultAccessToken($longLivedToken);
+
+// Fetch forever page access token
+$response = $fb->sendRequest('GET', $pageId, ['fields' => 'access_token'])->getDecodedBody();
+$foreverPageAccessToken = $response['access_token'];
+
+// Initialize WooCommerce client
+$woocommerce = new Client(
+    'http://localhost/bedrockwp/demo1/',
+    'ck_9b2330acac7d6d50ba875b0ce22755a24fa246a8',
+    'cs_f8fa6b3de448da755c382711c6251bf1fe224113',
+    [
+        'wp_api' => true,
+        'version' => 'wc/v3',
+        'verify_ssl' => false,
+    ]
+);
+
+try {
+    // Fetch products from WooCommerce
+    $products = $woocommerce->get('products', ['per_page' => 10]);
+    foreach ($products as $product) {
+        // Extract product details
+        $productName = $product->name;
+        $productShortDescription = $product->short_description;
+
+        try {
+            // Post product on Facebook
+            $fb->setDefaultAccessToken($foreverPageAccessToken);
+            $fb->sendRequest('POST', "$pageId/feed", [
+                'message' => $productName,
+                // 'link' => $productImageUrl,
+            ]);
+        } catch (Facebook\Exceptions\FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+        }
+    }
+} catch (Exception $e) {
+    echo 'Error Fetching Products' . $e->getMessage();
+}
+
+```
+## Code Explanation:
+
+1. **Facebook SDK Initialization**:
+   - The Facebook SDK is initialized with the provided App ID, App Secret, and default graph version.
+
+2. **Fetching Long-lived Access Token**:
+   - The script retrieves a long-lived access token using the provided user access token. This is required for extended usage.
+
+3. **Fetching Forever Page Access Token**:
+   - The script retrieves a permanent (forever) page access token for posting on the specified Facebook page.
+
+4. **WooCommerce Client Initialization**:
+   - The WooCommerce client is initialized with the store URL, consumer key, consumer secret, and other options like API version and SSL verification.
+
+5. **Fetching Products from WooCommerce**:
+   - Products are fetched from the WooCommerce store using the `get` method. It retrieves a specified number of products per page.
+
+6. **Posting Products on Facebook**:
+   - For each product fetched, the script attempts to post the product name as a message on the specified Facebook page.
+
+7. **Error Handling**:
+   - Exceptions are caught and appropriate error messages are displayed if there are any issues during product fetching or posting.
+
+This script automates the process of fetching products from a WooCommerce store and posting them on a Facebook page. It's essential to ensure that all credentials are correctly configured and permissions are granted for smooth execution.
