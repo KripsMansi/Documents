@@ -3,7 +3,7 @@
 This repository contains documents that provide information, explanations, or code samples.
 
 ## Table of Contents
-[Integration Guide: Using Facebook and WooCommerce Together](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
+[Show Woocommerce Products In Facebook Page ](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
