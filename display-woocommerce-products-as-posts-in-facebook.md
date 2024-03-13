@@ -65,74 +65,144 @@ This guide outlines the step-by-step process of integrating Facebook and WooComm
 
 By following these steps, you can effectively integrate Facebook and WooCommerce to streamline your e-commerce operations and enhance your online presence.
 
+Wordpress Page Template
+
 ```php
-// Including required libraries
+/**
+ * Template Name: Social-feed
+ **/
+require_once get_template_directory() . '/vendor/autoload.php';
 use Facebook\Facebook;
 use Automattic\WooCommerce\Client;
+$site_url = 'Your-site-url';
+$consumer_key = 'Your-consumerKey';
+$secret_key = 'Your-secret-key';
 
-// Include Composer's autoloader
-require_once 'vendor/autoload.php';
+$appId = 'App-id';
+$appSecret = 'Your-secret-id';
+$pageId = 'Page-id';
+$AccessToken = 'Your-Access Token';
 
-// Facebook App credentials
-$appId = 'YOUR_APP_ID';
-$appSecret = 'YOUR_APP_SECRET';
+// Function to retrieve stored long-lived access token from options
 
-// Facebook page ID
-$pageId = 'YOUR_PAGE_ID';
+function get_stored_facebook_token() {
+    return get_option('facebook_long_lived_token');
+}
 
-// User Access Token for posting on Facebook
-$userAccessToken = 'YOUR_USER_ACCESS_TOKEN';
-
-// Initialize Facebook SDK
-$fb = new Facebook([
-    'app_id' => $appId,
-    'app_secret' => $appSecret,
-    'default_graph_version' => 'v2.5'
-]);
-
-// Get long-lived access token from user access token
-$longLivedToken = $fb->getOAuth2Client()->getLongLivedAccessToken($userAccessToken);
-$fb->setDefaultAccessToken($longLivedToken);
-
-// Fetch forever page access token
-$response = $fb->sendRequest('GET', $pageId, ['fields' => 'access_token'])->getDecodedBody();
-$foreverPageAccessToken = $response['access_token'];
-
-// Initialize WooCommerce client
-$woocommerce = new Client(
-    'YOUR-SITE-URL',
-    'CONSUMER-KEY',
-    'SECRET-KEY',
-    [
-        'wp_api' => true,
-        'version' => 'wc/v3',
-        'verify_ssl' => false,
-    ]
-);
-
-try {
-    // Fetch products from WooCommerce
-    $products = $woocommerce->get('products', ['per_page' => 10]);
-    foreach ($products as $product) {
-        // Extract product details
-        $productName = $product->name;
-        $productShortDescription = $product->short_description;
-
-        try {
-            // Post product on Facebook
-            $fb->setDefaultAccessToken($foreverPageAccessToken);
-            $fb->sendRequest('POST', "$pageId/feed", [
-                'message' => $productName,
-                // 'link' => $productImageUrl,
-            ]);
-        } catch (Facebook\Exceptions\FacebookResponseException $e) {
-            echo 'Graph returned an error: ' . $e->getMessage();
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            echo 'Facebook SDK returned an error: ' . $e->getMessage();
-        }
+function is_valid_facebook_token($token) {
+    $storedTime = get_option('facebook_token_stored_time');
+    $expiryTime = strtotime($storedTime . ' +60 days');
+    if (time() < $expiryTime) {
+        return true; // Token is still valid
+    } else {
+        return false; // Token has expired or is invalid
     }
+}
+
+// Retrieve stored long-lived access token from options table
+$storedToken = get_stored_facebook_token();
+// Check if stored token is valid
+if (is_valid_facebook_token($storedToken)) {
+    echo "Stored token is valid.<br>";
+    $fb = new Facebook([
+        'app_id' => $appId,
+        'app_secret' => $appSecret,
+        'default_graph_version' => 'v2.5'
+    ]);
+    $longLivedToken = $storedToken; // Reuse stored token
+
+    $fb->setDefaultAccessToken($storedToken);
+
+} else {
+
+    try {
+        // Token is stored, generate a longlived token
+        $fb = new Facebook([
+            'app_id' => $appId,
+            'app_secret' => $appSecret,
+            'default_graph_version' => 'v2.5'
+        ]);
+        
+        // Generate new long-lived access token
+        $longLivedToken = $fb->getOAuth2Client()->getLongLivedAccessToken($AccessToken);
+        
+        // Store the new long-lived access token
+        update_option('facebook_long_lived_token', $longLivedToken);
+        update_option('facebook_token_stored_time', current_time('mysql'));
+        
+        // Set the new long-lived access token as default
+        $fb->setDefaultAccessToken($longLivedToken);
+        
+        echo "New long-lived token generated and stored.<br>";
+    } catch (Facebook\Exceptions\FacebookResponseException $e) {
+        echo 'Graph returned an error: ' . $e->getMessage();
+    } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        echo 'Facebook SDK returned an error: ' . $e->getMessage();
+    } catch (Exception $e) {
+        echo 'Error: ' . $e->getMessage();
+    }
+    
+}
+
+$response = $fb->sendRequest('GET', $pageId, ['fields' => 'access_token'])->getDecodedBody();
+
+$foreverPageAccessToken = $response['access_token'];
+//Another way login redirect and fetch access token issue with fb popup blank on redirect
+
+  // Initialize WooCommerce client
+  $woocommerce = new Client(
+      $site_url,
+      $consumer_key,
+      $secret_key,
+      [
+          'version' => 'wc/v3',
+      ]
+  );
+  
+try {
+   
+    $allProducts = $woocommerce->get('products');
+    $count = 0;
+    // Loop through all products retrieved
+    foreach ($allProducts as $product) {
+        if($count === 2){
+            break;
+        }
+        $productid = $product->id;        
+        $productname = $product->name;
+        $productShortDescription = $product->short_description;
+        $productLink = $product->permalink;
+        $productImageUrl = $product->images[0]->src; // Assuming the first image is the featured image
+        $productPrice = $product->price;
+        $alreadyPosted = get_post_meta($productid, 'posted', true);
+        $fb->setDefaultAccessToken($foreverPageAccessToken);
+        // Create post data if not already posted
+        //avoid posting products duplication again and again when running code
+        if ($alreadyPosted !== 'true') {      
+            // Upload the image to the Facebook page's photos
+            $response = $fb->sendRequest('POST', "/$pageId/photos", [
+                'message' => $productname . "\nPrice: $" . $productPrice . "\n" . $productShortDescription ."\nProduct Link: " . $productLink,
+                'url' => $productImageUrl,
+                'caption' => $productLink, // Optional: Caption for the photo
+                // 'no_story' => true
+            ]);
+            $imageId = $response->getGraphNode()->getField('id');
+
+            update_post_meta($productid, 'posted', 'true');
+
+            $graphNode = $response->getGraphNode();
+            $postId = $graphNode['id'];
+
+            echo 'Product posted successfully. FB Post ID: ' . $postId . ' Product-id ' . $productid . '<br>';
+        };
+        $count++;
+    }
+} catch (Facebook\Exceptions\FacebookResponseException $e) {
+    echo 'Graph returned an error: ' . $e->getMessage();
+} catch (Facebook\Exceptions\FacebookSDKException $e) {
+    echo 'Facebook SDK returned an error: ' . $e->getMessage();
 } catch (Exception $e) {
-    echo 'Error Fetching Products' . $e->getMessage();
+    echo 'Error: ' . $e->getMessage();
 }
 
 ```
