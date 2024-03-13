@@ -66,6 +66,7 @@ This guide outlines the step-by-step process of integrating Facebook and WooComm
 By following these steps, you can effectively integrate Facebook and WooCommerce to streamline your e-commerce operations and enhance your online presence.
 
 Wordpress Page Template
+App Type: Other > Buisness
 
 ```php
 /**
@@ -230,3 +231,102 @@ try {
    - Exceptions are caught and appropriate error messages are displayed if there are any issues during product fetching or posting.
 
 This script automates the process of fetching products from a WooCommerce store and posting them on a Facebook page. It's essential to ensure that all credentials are correctly configured and permissions are granted for smooth execution.
+
+**How too add as Post feed**
+```php
+ try {
+       $message = 'Test message website';
+       $title = 'Post From Website';
+       $description = 'Programming blog.';
+       
+       $attachment = array(
+           'message' => $message,
+           'name' => $title,
+           'description' => $description,
+          
+       );
+       // Post a message to the user's profile
+       $response = $fb->post('/me/feed', $attachment ,$accessToken);
+
+       // Get the post ID if the post was successful
+       $graphNode = $response->getGraphNode();
+       echo 'Post ID: ' . $graphNode['id'];
+   } catch (FacebookResponseException $e) {
+       echo 'Graph returned an error: ' . $e->getMessage();
+   } catch (FacebookSDKException $e) {
+       echo 'Facebook SDK returned an error: ' . $e->getMessage();
+}
+```
+
+Generate access Token with Login Url
+App Type : Facebook Login
+configure Product: Facebook setup
+Set up Redirect Url
+
+Example shows how to fetch Access token With Login Url
+```php
+
+/**
+ * Template Name: Social Feed
+ **/
+
+// Get the child theme directory
+$theme_directory = get_stylesheet_directory();
+
+// Include the autoloader provided in the SDK
+require_once $theme_directory . '/templates/vendor/autoload.php';
+
+use Facebook\Facebook;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
+
+// Set your Facebook App ID and App Secret
+$appId = '882905023657603';
+$appSecret = 'd85238e05bc730e561ed0af95d6b7e2a';
+$redirectUri = 'https://foodsafetystandard.demo1.bytestechnolab.com/social-feed';
+$scopes = ['publish_to_groups', 'pages_read_engagement', 'pages_manage_posts','email'];
+
+$loginUrl = 'https://www.facebook.com/v12.0/dialog/oauth?' . http_build_query([
+    'client_id' => $appId,
+    'redirect_uri' => $redirectUri,
+     'scope' => 'email',
+    // 'scope' => implode(',', $scopes), 
+    'response_type' => 'code',
+]);
+
+if (isset($_GET['code'])) {
+    $tokenUrl = 'https://graph.facebook.com/v12.0/oauth/access_token';
+    $postData = [
+        'client_id' => $appId,
+        'client_secret' => $appSecret,
+        'redirect_uri' => $redirectUri,
+        'code' => $_GET['code'],
+    ];
+
+    // Use PHP's built-in functions to send a POST request
+    $options = [
+        'http' => [
+            'method' => 'POST',
+            'header' => 'Content-type: application/x-www-form-urlencoded',
+            'content' => http_build_query($postData),
+        ],
+    ];
+    $context = stream_context_create($options);
+    $response = file_get_contents($tokenUrl, false, $context);
+
+    if ($response !== false) {
+        $params = json_decode($response, true);
+        if (isset($params['access_token'])) {
+            $accessToken = $params['access_token'];
+            echo 'Access Token: ' . $accessToken;
+            //// Process Your code
+        } else {
+            echo 'Error: Access token not found';
+        }
+    } else {
+        echo 'Error: Failed to get access token.';
+    }
+} else {
+    header('Location: ' . $loginUrl);
+    exit();
+}
