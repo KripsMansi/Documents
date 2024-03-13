@@ -164,38 +164,65 @@ try {
    
     $allProducts = $woocommerce->get('products');
     $count = 0;
+
+    // Retrieve WooCommerce default currency
+    $default_currency = get_woocommerce_currency_symbol();
+
+    // Decode HTML entities for currency symbol
+    $currency_symbol = html_entity_decode($default_currency, ENT_QUOTES, 'UTF-8');
+
     // Loop through all products retrieved
     foreach ($allProducts as $product) {
-        if($count === 2){
+        if ($count >= 2) {
             break;
         }
-        $productid = $product->id;        
+        $productid = $product->id;     
         $productname = $product->name;
-        $productShortDescription = $product->short_description;
+        $productShortDescription = wp_strip_all_tags($product->short_description);
         $productLink = $product->permalink;
         $productImageUrl = $product->images[0]->src; // Assuming the first image is the featured image
         $productPrice = $product->price;
         $alreadyPosted = get_post_meta($productid, 'posted', true);
         $fb->setDefaultAccessToken($foreverPageAccessToken);
-        // Create post data if not already posted
-        //avoid posting products duplication again and again when running code
-        if ($alreadyPosted !== 'true') {      
-            // Upload the image to the Facebook page's photos
-            $response = $fb->sendRequest('POST', "/$pageId/photos", [
-                'message' => $productname . "\nPrice: $" . $productPrice . "\n" . $productShortDescription ."\nProduct Link: " . $productLink,
-                'url' => $productImageUrl,
-                'caption' => $productLink, // Optional: Caption for the photo
-                // 'no_story' => true
-            ]);
-            $imageId = $response->getGraphNode()->getField('id');
-
-            update_post_meta($productid, 'posted', 'true');
-
-            $graphNode = $response->getGraphNode();
-            $postId = $graphNode['id'];
-
-            echo 'Product posted successfully. FB Post ID: ' . $postId . ' Product-id ' . $productid . '<br>';
-        };
+        $productType = $product->type; // Get product type
+    
+        // Check if product type is "simple"
+        if ($productType === 'simple') {
+            // Create post data if not already posted
+            //avoid posting products duplication again and again when running code
+            // if ($alreadyPosted !== 'true') { //swap this condition once testing is done for not creating products agin and again
+            if(empty($alreadyPosted) ){
+                if(!empty($productImageUrl)) {
+                    // Upload the image to the Facebook page's photos
+                    $response = $fb->sendRequest('POST', "/$pageId/photos", [
+                        'message' => $productname . "\nPrice: " . $currency_symbol . $productPrice  . "\n" . $productShortDescription ."\nProduct Link: " . $productLink,
+                        'url' => $productImageUrl,
+                        'caption' => $productLink, // Optional: Caption for the photo
+                        // 'no_story' => true
+                    ]);
+                    $imageId = $response->getGraphNode()->getField('id');
+    
+                    update_post_meta($productid, 'posted', 'true');
+    
+                    $graphNode = $response->getGraphNode();
+                    $postId = $graphNode['id'];
+    
+                    echo 'Product posted successfully. FB Post ID: ' . $postId . ' Product-id ' . $productid . '<br>';
+                }else {
+                    // If no image available, share as post feed
+                    $productLink = $product->permalink;
+                    // Create post feed data
+                    $response = $fb->sendRequest('POST', "/$pageId/feed", [
+                        'message' => $productname . "\nPrice: " . $default_currency . $productPrice . "\n" . $productShortDescription . "\nProduct Link: " . $productLink,
+                        'source'  => $productLink,
+                    ]);
+                    $postId = $response->getGraphNode()->getField('id');
+                    echo 'Product posted as feed successfully. FB Post ID: ' . $postId . ' Product-id ' . $productid . '<br>';
+                    $count++;
+                    continue; // Skip the rest of the loop iteration
+                }
+            }
+        }
         $count++;
     }
 } catch (Facebook\Exceptions\FacebookResponseException $e) {
