@@ -37,46 +37,78 @@ Stripe Payment Intents API provides a flexible and powerful way to handle paymen
 ### Server-Side Code (PHP) to Create Payment Intent:
 
 ```php
+<?php
+
+// Include Stripe PHP library
+require_once 'vendor/autoload.php';
+
+// Set your Stripe API key
 \Stripe\Stripe::setApiKey('sk_test_YourSecretKey');
 
-$payment_intent = \Stripe\PaymentIntent::create([
-    'amount' => 1000,
-    'currency' => 'usd',
-    'description' => 'Example Payment',
-    // Add additional parameters as needed
-]);
-echo json_encode(['client_secret' => $payment_intent->client_secret]);
-```
-- Client-Side Code (JavaScript) to Confirm Payment Intent:
-```php
-fetch('/create-payment-intent.php', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ amount: 1000, currency: 'usd' }) // Adjust amount and currency as needed
-})
-.then(function(response) {
-    return response.json();
-})
-.then(function(data) {
-    var stripe = Stripe('YourPublicKey');
-    stripe.confirmCardPayment(data.client_secret, {
-        payment_method: {
-            card: cardElement,
-            billing_details: {
-                name: 'Customer Name'
-            }
+// Retrieve payment amount from POST request
+$amount = $_POST['amount'];
+
+try {
+    // Create a Payment Intent with the provided amount
+    $payment_intent = \Stripe\PaymentIntent::create([
+        'amount' => $amount,
+        'currency' => 'usd',
+    ]);
+
+    // Return the Payment Intent status
+    echo json_encode(['status' => $payment_intent->status]);
+} catch (\Stripe\Exception\ApiErrorException $e) {
+    // Handle any errors from Stripe API
+    echo json_encode(['error' => $e->getMessage()]);
+}
+
+// Function to create Payment Intent and handle payment confirmation
+function handlePayment(amount) {
+    // Make a POST request to create Payment Intent
+    fetch('create_payment_intent.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount: amount })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        // Check Payment Intent status returned from server
+        if (data.status === 'requires_payment_method') {
+            // Payment Intent created successfully, confirm payment
+            confirmPaymentIntent(data.payment_intent_id);
+        } else {
+            // Payment Intent creation failed or status not as expected
+            console.error('Payment Intent creation failed or status not as expected.');
+            // Example: Update UI to display error message
+            document.getElementById('payment-status').innerText = 'Payment Intent creation failed!';
         }
     })
-    .then(function(result) {
-        if (result.error) {
-            // Handle payment confirmation error
-            console.error(result.error.message);
-        } else {
-            // Payment confirmation successful
-            console.log(result.paymentIntent);
-        }
+    .catch(function(error) {
+        // Handle any errors from the server or network
+        console.error('Error:', error);
+        // Example: Update UI to display error message
+        document.getElementById('payment-status').innerText = 'Error creating Payment Intent!';
     });
-});
+}
+
+// Function to confirm Payment Intent on the client-side
+function confirmPaymentIntent(paymentIntentId) {
+    // Confirm the Payment Intent with the provided ID
+    // This part will be similar to the previous example for confirming payment
+    // You can reuse the confirmPayment function from the previous example
+}
+
+// Call the function with the desired payment amount when needed
+handlePayment(1000); // Example: Handle payment for $10.00
+
 ```
+## Overview
+
+- **create_payment_intent.php**: This server-side PHP script handles the logic to create a Payment Intent with the provided amount. It communicates with the Stripe API to generate the Payment Intent and returns its status to the client.
+
+- **confirm_payment.js**: This client-side JavaScript file makes a POST request to `create_payment_intent.php`, initiates the creation of a Payment Intent, and handles the response. If the Payment Intent is successfully created, it then proceeds to confirm the payment on the client-side.
+
