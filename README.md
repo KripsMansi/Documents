@@ -3,6 +3,9 @@
 This repository contains documents that provide information, explanations, or code samples.
 
 ## Table of Contents
+
+[Google Sign-In Configuration ](https://kripsmansi.github.io/blogs/Google-Sign-In-Configuration)
+
 [Show Woocommerce Products In Facebook Page ](https://kripsmansi.github.io/blogs/display-woocommerce-products-as-posts-in-facebook)
 
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
