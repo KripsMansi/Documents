@@ -31,8 +31,8 @@
     - Ensure to copy the redirect URI(s) you configured in the OAuth client ID setup.
     - These redirect URIs are where Google will redirect users after they authenticate. Remember that these URIs must use HTTPS for security reasons.
 
-**Google Sign-In Shortcode Implementation **
-This PHP function, google_signin_shortcode(), is designed to create a shortcode for embedding a Google Sign-In button within WordPress content.
+**Google Sign-In Shortcode Implementation**
+- This PHP function, google_signin_shortcode(), is designed to create a shortcode for embedding a Google Sign-In button within WordPress content.
 ```php
 function google_signin_shortcode() {
 	ob_start();	
@@ -58,26 +58,6 @@ function google_signin_shortcode() {
 add_shortcode('google_login', 'google_signin_shortcode');
 ```
 ### Google Authentication Ajax Handler:
-- This function handles the AJAX request for Google authentication.
-- It loads the Google API PHP Client library.
-- Retrieves Google API credentials from WordPress options.
-- Initializes the Google Client with the retrieved credentials and necessary scopes.
-- Handles the Google Sign-In callback when a code parameter is present in the AJAX request.
-
-### User Existence Check and Sign-In:
-- Checks if the user exists in the WordPress database based on their email.
-- If the user exists, attempts to sign them in by setting the current user and authentication cookie.
-- If successful, triggers the `wp_login` action and redirects the user to the profile URL.
-- If any errors occur during the sign-in process, returns appropriate error messages.
-
-### New User Creation and Sign-In:
-- If the user does not exist in the database,
-  - it creates a new user using the `wp_create_user()` function with their Google email as both username and email, and a generated password.
-  - Updates the newly created user's metadata with their first and last names obtained from Google.
-  - Sends a welcome email to the user with their login credentials.
-  - Attempts to sign in the newly created user using `wp_signon()`.
-  - If successful, redirects the user to the profile URL.
-  - If any errors occur during the user creation or sign-in process, returns appropriate error messages.
 
 ```php
 /**
@@ -239,3 +219,23 @@ jQuery(document).ready(function($) {
     }
 });   
 ```
+- This function handles the AJAX request for Google authentication.
+- It loads the Google API PHP Client library.
+- Retrieves Google API credentials from WordPress options.
+- Initializes the Google Client with the retrieved credentials and necessary scopes.
+- Handles the Google Sign-In callback when a code parameter is present in the AJAX request.
+
+### User Existence Check and Sign-In:
+- Checks if the user exists in the WordPress database based on their email.
+- If the user exists, attempts to sign them in by setting the current user and authentication cookie.
+- If successful, triggers the `wp_login` action and redirects the user to the profile URL.
+- If any errors occur during the sign-in process, returns appropriate error messages.
+
+### New User Creation and Sign-In:
+- If the user does not exist in the database,
+  - it creates a new user using the `wp_create_user()` function with their Google email as both username and email, and a generated password.
+  - Updates the newly created user's metadata with their first and last names obtained from Google.
+  - Sends a welcome email to the user with their login credentials.
+  - Attempts to sign in the newly created user using `wp_signon()`.
+  - If successful, redirects the user to the profile URL.
+  - If any errors occur during the user creation or sign-in process, returns appropriate error messages.
