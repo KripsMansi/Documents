@@ -121,9 +121,10 @@ jQuery('#social-login-form').on('submit', function(e) {
 });
 
 ```
-### Copy Client ID, Secret ID, Redirect URI and Save in adminarea
+**Copy Client ID, Secret ID, Redirect URI and Save in adminarea**
 
-**Display Google Sign-In Button in Frontend**
+### Display Google Sign-In Button in Frontend
+
 - This PHP function, google_signin_shortcode(), is designed to create a shortcode for embedding a Google Sign-In button.
 ```php
 function google_signin_shortcode() {
@@ -149,9 +150,9 @@ function google_signin_shortcode() {
 }
 add_shortcode('google_login', 'google_signin_shortcode');
 ```
-**Google Sign-In And Login Implementation in Frontend**
+### Google Sign-In And Login Implementation in Frontend
 
-### Ajax Handler for Google Authentication and How to Make user Google register, or Re-Login if already exist and send credential's Mail notification
+**Ajax Handler for Google Authentication and How to Make user Google register, or Re-Login if already exist and send credential's Mail notification**
 
 ```php
 /**
@@ -277,7 +278,28 @@ function google_login_ajax_handler() {
 add_action('wp_ajax_google_login_ajax', 'google_login_ajax_handler');
 add_action('wp_ajax_nopriv_google_login_ajax', 'google_login_ajax_handler');
 ```
-Ajax Function 
+- This function handles the AJAX request for Google authentication.
+- It loads the Google API PHP Client library.
+- Retrieves Google API credentials from WordPress options.
+- Initializes the Google Client with the retrieved credentials and necessary scopes.
+- Handles the Google Sign-In callback when a code parameter is present in the AJAX request.
+
+### User Existence Check and Sign-In:
+- Checks if the user exists in the WordPress database based on their email.
+- If the user exists, attempts to sign them in by setting the current user and authentication cookie.
+- If successful, triggers the `wp_login` action and redirects the user to the profile URL.
+- If any errors occur during the sign-in process, returns appropriate error messages.
+
+### New User Creation and Sign-In:
+- If the user does not exist in the database,
+  - it creates a new user using the `wp_create_user()` function with their Google email as both username and email, and a generated password.
+  - Updates the newly created user's metadata with their first and last names obtained from Google.
+  - Sends a welcome email to the user with their login credentials.
+  - Attempts to sign in the newly created user using `wp_signon()`.
+  - If successful, redirects the user to the profile URL.
+  - If any errors occur during the user creation or sign-in process, returns appropriate error messages.
+
+- Ajax Function 
 ```php
 jQuery(document).ready(function($) {
     // Check if the URL contains the 'code' parameter
@@ -313,23 +335,3 @@ jQuery(document).ready(function($) {
     }
 });   
 ```
-- This function handles the AJAX request for Google authentication.
-- It loads the Google API PHP Client library.
-- Retrieves Google API credentials from WordPress options.
-- Initializes the Google Client with the retrieved credentials and necessary scopes.
-- Handles the Google Sign-In callback when a code parameter is present in the AJAX request.
-
-### User Existence Check and Sign-In:
-- Checks if the user exists in the WordPress database based on their email.
-- If the user exists, attempts to sign them in by setting the current user and authentication cookie.
-- If successful, triggers the `wp_login` action and redirects the user to the profile URL.
-- If any errors occur during the sign-in process, returns appropriate error messages.
-
-### New User Creation and Sign-In:
-- If the user does not exist in the database,
-  - it creates a new user using the `wp_create_user()` function with their Google email as both username and email, and a generated password.
-  - Updates the newly created user's metadata with their first and last names obtained from Google.
-  - Sends a welcome email to the user with their login credentials.
-  - Attempts to sign in the newly created user using `wp_signon()`.
-  - If successful, redirects the user to the profile URL.
-  - If any errors occur during the user creation or sign-in process, returns appropriate error messages.
