@@ -8,6 +8,8 @@ This repository contains documents that provide information, explanations, or co
 
 [Show Woocommerce Products In Facebook Page ](https://kripsmansi.github.io/blogs/display-woocommerce-products-as-posts-in-facebook)
 
+[Stripe_Payment Intent_Confirmation ](https://kripsmansi.github.io/blogs/Stripe_Payment_Intent_Confirmation)
+
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
 ## Introduction
