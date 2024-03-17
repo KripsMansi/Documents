@@ -31,24 +31,116 @@
     - Ensure to copy the redirect URI(s) you configured in the OAuth client ID setup.
     - These redirect URIs are where Google will redirect users after they authenticate. Remember that these URIs must use HTTPS for security reasons.
 
-**Google Sign-In Shortcode Implementation**
-- This PHP function, google_signin_shortcode(), is designed to create a shortcode for embedding a Google Sign-In button within WordPress content.
+# Google Signup Credentials Menu Page
+
+## Adding Menu Page to Save Keys:
+-This PHP function adds a menu page titled "Social Login" under the WordPress admin menu. It provides options to manage social login settings and is accessible to users with the "manage_options" capability.
+
+```php
+/** Add menu page : Google signup credentials */ 
+function add_social_login_menu() {
+    add_menu_page(
+        'Social Login Settings',
+        'Social Login',
+        'manage_options',
+        'social-login-settings',
+        'social_login_page_content',
+        'dashicons-admin-users',
+        30
+    );
+}
+add_action('admin_menu', 'add_social_login_menu');
+
+/** Callback function for Google signup credentials */ 
+function social_login_page_content() {
+	$client_id = get_option('social_login_client_id');
+	$secret_id = get_option('social_login_secret_id');
+	$redirect_uri = get_option('social_login_redirect_uri');
+	?>
+	
+	<form id="social-login-form">
+	<label for="client-id">Client ID:</label>
+	<input type="text" id="client-id" name="client_id" value="<?php echo esc_attr($client_id); ?>"  style="width: 100%;"><br>
+	
+	<label for="secret-id">Secret ID:</label>
+	<input type="text" id="secret-id" name="secret_id" value="<?php echo esc_attr($secret_id); ?>"  style="width: 100%;"><br>
+	
+	<label for="redirect-uri">Redirect URI:</label>
+	<input type="text" id="redirect-uri" name="redirect_uri" value="<?php echo esc_attr($redirect_uri); ?>"  style="width: 100%;"><br>
+	
+	<button type="submit" id="save-settings" class="button-primary">Save Settings</button>
+	</form>
+	<div id="status-message"></div>   
+    <?php
+}
+```
+- This PHP function is used to save social login settings. It retrieves the client ID, secret ID, and redirect URI from the AJAX request, sanitizes them, and saves them to the WordPress options table using the update_option() function. It responds with a success message upon successful saving of settings.
+- jQuery AJAX function is used to handle the form submission for saving social login settings.
+
+```php
+add_action('wp_ajax_save_social_login_settings', 'save_social_login_settings');
+
+function save_social_login_settings() {
+    // Sanitize and save settings
+    $client_id = $_POST['client_id'];
+    $secret_id = $_POST['secret_id'];
+    $redirect_uri = $_POST['redirect_uri'];
+    
+    // Save settings to database or any other action
+    update_option('social_login_client_id', $client_id);
+    update_option('social_login_secret_id', $secret_id);
+    update_option('social_login_redirect_uri', $redirect_uri);
+    
+    wp_send_json_success('Settings saved successfully');
+}
+jQuery('#social-login-form').on('submit', function(e) {
+    e.preventDefault();
+    var client_id = jQuery('#client-id').val();
+    var secret_id = jQuery('#secret-id').val();
+    var redirect_uri = jQuery('#redirect-uri').val();
+    
+    jQuery.ajax({
+        url: ajax_object.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'save_social_login_settings',
+            client_id: client_id,
+            secret_id: secret_id,
+            redirect_uri: redirect_uri,
+        },
+        success: function(response) {
+            jQuery('#status-message').html('<div class="updated"><p>Settings saved successfully!</p></div>');
+            setTimeout(function () {
+                jQuery('#status-message').empty();
+            }, 2000);               
+        },
+        error: function(xhr, status, error) {
+            jQuery('#status-message').html('<div class="error"><p>' + xhr.responseText + '</p></div>');
+        }
+    });
+});
+
+```
+### Copy Client ID, Secret ID, Redirect URI and Save in adminarea
+
+**Display Google Sign-In Button in Frontend**
+- This PHP function, google_signin_shortcode(), is designed to create a shortcode for embedding a Google Sign-In button.
 ```php
 function google_signin_shortcode() {
 	ob_start();	
 	require_once get_template_directory() . '/vendor/autoload.php';
 	$client_id = get_option('social_login_client_id');
-  $secret_id = get_option('social_login_secret_id');
-  $redirect_uri = get_option('social_login_redirect_uri');
-  // Initialize Google Client
-  $client = new Google_Client();
-  $client->setClientId($client_id);
-  $client->setClientSecret($secret_id);
-  $client->setRedirectUri($redirect_uri);
-  $client->addScope("email");
-  $client->addScope("profile");
-  // Generate login URL
-  $loginUrl = $client->createAuthUrl();
+	$secret_id = get_option('social_login_secret_id');
+	$redirect_uri = get_option('social_login_redirect_uri');
+	// Initialize Google Client
+	$client = new Google_Client();
+	$client->setClientId($client_id);
+	$client->setClientSecret($secret_id);
+	$client->setRedirectUri($redirect_uri);
+	$client->addScope("email");
+	$client->addScope("profile");
+	// Generate login URL
+	$loginUrl = $client->createAuthUrl();
 	echo '<div class="form_google_link">';
 	echo "<a href='$loginUrl'>Continue with Google</a>";
 	echo "<p>Or</p>";
@@ -57,7 +149,9 @@ function google_signin_shortcode() {
 }
 add_shortcode('google_login', 'google_signin_shortcode');
 ```
-### Google Authentication Ajax Handler:
+**Google Sign-In And Login Implementation in Frontend**
+
+### Ajax Handler for Google Authentication and How to Make user Google register, or Re-Login if already exist and send credential's Mail notification
 
 ```php
 /**
