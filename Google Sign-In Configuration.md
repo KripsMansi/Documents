@@ -51,6 +51,12 @@ function add_social_login_menu() {
 }
 add_action('admin_menu', 'add_social_login_menu');
 
+```
+- This PHP function is used to save social login settings. It retrieves the client ID, secret ID, and redirect URI from the AJAX request, sanitizes them, and saves them to the WordPress options table using the update_option() function. It responds with a success message upon successful saving of settings.
+- jQuery AJAX function is used to handle the form submission for saving social login settings.
+
+```php
+
 /** Callback function for Google signup credentials */ 
 function social_login_page_content() {
 	$client_id = get_option('social_login_client_id');
@@ -73,13 +79,7 @@ function social_login_page_content() {
 	<div id="status-message"></div>   
     <?php
 }
-```
-- This PHP function is used to save social login settings. It retrieves the client ID, secret ID, and redirect URI from the AJAX request, sanitizes them, and saves them to the WordPress options table using the update_option() function. It responds with a success message upon successful saving of settings.
-- jQuery AJAX function is used to handle the form submission for saving social login settings.
-
-```php
 add_action('wp_ajax_save_social_login_settings', 'save_social_login_settings');
-
 function save_social_login_settings() {
     // Sanitize and save settings
     $client_id = $_POST['client_id'];
