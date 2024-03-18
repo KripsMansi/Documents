@@ -4,6 +4,7 @@
 The schedule_feed_cron_job() function schedules the cron job based on the selected recurrence option and feed status.
 The run_feed_cron_job() function defines the tasks to be performed when the cron job is triggered, such as displaying an admin notice.
 ```php
+
 function my_custom_menu_page() {
     add_menu_page(
         'Feed Settings',      // Page title
@@ -16,7 +17,36 @@ function my_custom_menu_page() {
 add_action('admin_menu', 'my_custom_menu_page');
 function feed_settings_page(){
     ?>
-    <style>
+    <div class="wrap">
+        <div class="feed-settings-box">
+            <h2>Cron Settings</h2>
+            <form id="feed-settings-form">            
+                <label for="recurrence">Recurrence:</label>
+                <select id="recurrence" name="recurrence">
+                    <option value="30_minutes" <?php selected(get_option('recurrence'), '30_minutes'); ?>>Every 30 minutes</option>
+                    <option value="hourly" <?php selected(get_option('recurrence'), 'hourly'); ?>>Hourly</option>
+                    <option value="daily" <?php selected(get_option('recurrence'), 'daily'); ?>>Once a day</option>
+                    <option value="twice_daily" <?php selected(get_option('recurrence'), 'twice_daily'); ?>>Twice a day</option>
+                    <option value="weekly" <?php selected(get_option('recurrence'), 'weekly'); ?>>Once weekly</option>
+                    <option value="15_days" <?php selected(get_option('recurrence'), '15_days'); ?>>Every 15 days</option>
+                    <option value="monthly" <?php selected(get_option('recurrence'), 'monthly'); ?>>Once a month</option>
+                </select><br>
+                <label for="status">Status:</label>
+                <select id="status" name="status">
+                    <option value="on" <?php selected(get_option('feed_status'), 'on'); ?>>On</option>
+                    <option value="off" <?php selected(get_option('feed_status'), 'off'); ?>>Off</option>
+                </select><br>
+    
+                <input type="submit" value="Save Settings" class="button button-primary">
+            </form>
+    
+            <div id="status-message"></div>
+        </div>
+    </div>
+<?php
+}
+//style
+ <style>
     .feed-settings-box {
         border: 1px solid #ccc;
         padding: 20px;
@@ -54,34 +84,6 @@ function feed_settings_page(){
         margin-top: 15px;
     }
 </style>
-<div class="wrap">
-    <div class="feed-settings-box">
-        <h2>Cron Settings</h2>
-        <form id="feed-settings-form">            
-            <label for="recurrence">Recurrence:</label>
-            <select id="recurrence" name="recurrence">
-                <option value="30_minutes" <?php selected(get_option('recurrence'), '30_minutes'); ?>>Every 30 minutes</option>
-                <option value="hourly" <?php selected(get_option('recurrence'), 'hourly'); ?>>Hourly</option>
-                <option value="daily" <?php selected(get_option('recurrence'), 'daily'); ?>>Once a day</option>
-                <option value="twice_daily" <?php selected(get_option('recurrence'), 'twice_daily'); ?>>Twice a day</option>
-                <option value="weekly" <?php selected(get_option('recurrence'), 'weekly'); ?>>Once weekly</option>
-                <option value="15_days" <?php selected(get_option('recurrence'), '15_days'); ?>>Every 15 days</option>
-                <option value="monthly" <?php selected(get_option('recurrence'), 'monthly'); ?>>Once a month</option>
-            </select><br>
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="on" <?php selected(get_option('feed_status'), 'on'); ?>>On</option>
-                <option value="off" <?php selected(get_option('feed_status'), 'off'); ?>>Off</option>
-            </select><br>
-
-            <input type="submit" value="Save Settings" class="button button-primary">
-        </form>
-
-        <div id="status-message"></div>
-    </div>
-</div>
-<?php
-}
 //js script
  jQuery('#feed-settings-form').on('submit', function(e) {
         e.preventDefault();
