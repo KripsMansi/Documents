@@ -1,10 +1,10 @@
 ### Schedule Cron Event
 
 - The code includes functions to schedule and run the cron job responsible for executing tasks at specified intervals. 
-The schedule_feed_cron_job() function schedules the cron job based on the selected recurrence option and feed status.
-The run_feed_cron_job() function defines the tasks to be performed when the cron job is triggered, such as displaying an admin notice.
-```php
+- The schedule_feed_cron_job() function schedules the cron job based on the selected recurrence option and feed status.
+- The run_feed_cron_job() function defines the tasks to be performed when the cron job is triggered, such as displaying an admin notice.
 
+```php
 function my_custom_menu_page() {
     add_menu_page(
         'Feed Settings',      // Page title
@@ -15,9 +15,7 @@ function my_custom_menu_page() {
     );
 }
 add_action('admin_menu', 'my_custom_menu_page');
-```
-```php
-function feed_settings_page(){
+function feed_settings_page(){ ?>
    
     <div class="wrap">
         <div class="feed-settings-box">
@@ -44,7 +42,7 @@ function feed_settings_page(){
     
             <div id="status-message"></div>
         </div>
-    </div>
+    </div> <?php
 }
 //style
  <style>
