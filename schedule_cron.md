@@ -18,7 +18,7 @@ add_action('admin_menu', 'my_custom_menu_page');
 ```
 ```php
 function feed_settings_page(){
-    ?>
+   
     <div class="wrap">
         <div class="feed-settings-box">
             <h2>Cron Settings</h2>
@@ -45,7 +45,6 @@ function feed_settings_page(){
             <div id="status-message"></div>
         </div>
     </div>
-<?php
 }
 //style
  <style>
