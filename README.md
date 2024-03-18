@@ -14,6 +14,9 @@ This repository contains documents that provide information, explanations, or co
 
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
+[Custom field in Custom metabox,Admin column: Quickedit,Bulk edit](https://kripsmansi.github.io/blogs/custom_field_in_quickedit_and_bulk_edit)
+
+
 ## Introduction
 
 Welcome to the "documents" repository! This repository is dedicated to hosting various documents that offer insights, information, or explanations related to specific topics, code snippets, or tutorials.
