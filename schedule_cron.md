@@ -15,6 +15,8 @@ function my_custom_menu_page() {
     );
 }
 add_action('admin_menu', 'my_custom_menu_page');
+```
+```php
 function feed_settings_page(){
     ?>
     <div class="wrap">
