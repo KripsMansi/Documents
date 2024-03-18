@@ -12,9 +12,10 @@ This repository contains documents that provide information, explanations, or co
 
 [Schedule Cron ](https://kripsmansi.github.io/blogs/schedule_cron)
 
+[Custom field in Custom metabox,Admin column: Quickedit,Bulk edit](https://kripsmansi.github.io/blogs/custom_field_in_quickedit_and_bulk_edit)
+
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
-[Custom field in Custom metabox,Admin column: Quickedit,Bulk edit](https://kripsmansi.github.io/blogs/custom_field_in_quickedit_and_bulk_edit)
 
 
 ## Introduction
