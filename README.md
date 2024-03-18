@@ -10,6 +10,8 @@ This repository contains documents that provide information, explanations, or co
 
 [Stripe_Payment Intent_Confirmation ](https://kripsmansi.github.io/blogs/Stripe_Payment_Intent_Confirmation)
 
+[Schedule_Cron ](https://kripsmansi.github.io/blogs/schedule_cron.md)
+
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
 ## Introduction
