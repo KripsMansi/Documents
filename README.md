@@ -16,7 +16,7 @@ This repository contains documents that provide information, explanations, or co
 
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
-
+[WP Bakery Custom Element](https://kripsmansi.github.io/blogs/wp-bakery-custom-icon-box)
 
 ## Introduction
 
