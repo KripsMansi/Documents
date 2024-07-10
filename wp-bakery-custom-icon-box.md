@@ -7,3 +7,4 @@ This custom instruction box element for WPBakery Page Builder includes a rich te
 To add this custom element to your WPBakery Page Builder, add the following code to your theme's `functions.php` file or create a custom plugin.
 
 ## Code
+![Alt Text](images/bakerycustombox1.png)
