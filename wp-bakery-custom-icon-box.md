@@ -100,3 +100,7 @@ function custom_instruction_element_output($atts, $content = null) {
 ![Alt Text](images/bakerycustombox3.png)
 
 
+## Conclusion
+
+Creating custom elements/widgets for WPBakery Page Builder using vc_map allows you to extend the functionality of the page builder and tailor it to your specific needs. By following the steps outlined in this article, you can register your elements and give your website a unique and customized look. Custom elements not only enhance your design capabilities but also streamline the content creation process for both you and your clients. For more detailed information, you can refer to the WPBakery Page Builder documentation on vc_map.
+
