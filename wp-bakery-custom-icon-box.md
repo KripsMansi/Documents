@@ -9,6 +9,7 @@ To add this custom element to your WPBakery Page Builder, add the following code
 ## Code
 
 ```php
+
 /***
  * Create wp bakery - Custom Instruction Box with wp editor
  */
@@ -60,3 +61,4 @@ function custom_instruction_element_output($atts, $content = null) {
 
     return $output;
 }
+```
