@@ -4,6 +4,8 @@ This repository contains documents that provide information, explanations, or co
 
 ## Table of Contents
 
+[WP Bakery Custom Element](https://kripsmansi.github.io/blogs/wp-bakery-custom-icon-box)
+
 [Google Sign-In Configuration ](https://kripsmansi.github.io/blogs/Google-Sign-In-Configuration)
 
 [Show Woocommerce Products In Facebook Page ](https://kripsmansi.github.io/blogs/display-woocommerce-products-as-posts-in-facebook)
@@ -16,7 +18,6 @@ This repository contains documents that provide information, explanations, or co
 
 [Singleton Pattern Example](https://kripsmansi.github.io/blogs/php-oop-singleton-pattern)
 
-[WP Bakery Custom Element](https://kripsmansi.github.io/blogs/wp-bakery-custom-icon-box)
 
 ## Introduction
 
